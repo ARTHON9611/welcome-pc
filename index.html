@@ -543,25 +543,25 @@
     <p class="fortune" id="fortune">&nbsp;</p>
 
     <div class="quest">
-      <p class="quest-label">Daily goal â€” clear all three</p>
+      <p class="quest-label">Daily goal — clear all three</p>
       <ul class="quest-list" id="questList"></ul>
     </div>
   </section>
 
   <section class="card">
     <div class="tabs" role="tablist" aria-label="Mini games">
-      <button class="tab active" role="tab" aria-selected="true" data-tab="reaction">âš¡ Reaction</button>
-      <button class="tab" role="tab" aria-selected="false" data-tab="memory">ðŸ§  Memory</button>
-      <button class="tab" role="tab" aria-selected="false" data-tab="guess">ðŸŽ¯ Guess</button>
+      <button class="tab active" role="tab" aria-selected="true" data-tab="reaction">⚡ Reaction</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="memory">🧠 Memory</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="guess">🎯 Guess</button>
     </div>
 
     <div class="panel" id="panel-reaction" role="tabpanel">
       <p class="hint">Click the box the instant it turns green.</p>
       <div class="reaction-box" id="rxBox" role="button" tabindex="0">Click to start</div>
       <div class="row">
-        <div class="mini"><span id="rxLast">â€”</span><small>last</small></div>
-        <div class="mini"><span id="rxAvg">â€”</span><small>avg of 5</small></div>
-        <div class="mini"><span id="rxBest">â€”</span><small>best</small></div>
+        <div class="mini"><span id="rxLast">—</span><small>last</small></div>
+        <div class="mini"><span id="rxAvg">—</span><small>avg of 5</small></div>
+        <div class="mini"><span id="rxBest">—</span><small>best</small></div>
       </div>
     </div>
 
@@ -597,8 +597,8 @@
   </section>
 
   <footer>
-    Everything is saved on this device Â· nothing leaves your browser.<br>
-    Miss a day and the streak starts over â€” see you tomorrow.
+    Everything is saved on this device · nothing leaves your browser.<br>
+    Miss a day and the streak starts over — see you tomorrow.
   </footer>
 </main>
 
@@ -679,22 +679,22 @@
      Game + badge definitions
      ============================================================ */
   const GAMES = [
-    { id: "reaction", icon: "âš¡", label: "Beat the reaction test" },
-    { id: "memory",   icon: "ðŸ§ ", label: "Clear the memory board" },
-    { id: "guess",    icon: "ðŸŽ¯", label: "Win at number guessing" }
+    { id: "reaction", icon: "⚡", label: "Beat the reaction test" },
+    { id: "memory",   icon: "🧠", label: "Clear the memory board" },
+    { id: "guess",    icon: "🎯", label: "Win at number guessing" }
   ];
 
   const BADGES = [
-    { id: "first",  icon: "ðŸŒ±", name: "First Steps",   desc: "Opened the site" },
-    { id: "streak3",icon: "ðŸ”¥", name: "On a Roll",     desc: "3-day streak" },
-    { id: "streak7",icon: "ðŸš€", name: "Week Warrior",  desc: "7-day streak" },
-    { id: "night",  icon: "ðŸŒ™", name: "Night Owl",     desc: "Visited before 5 AM" },
-    { id: "early",  icon: "ðŸ¦", name: "Early Bird",    desc: "Visited before 8 AM" },
-    { id: "speed",  icon: "ðŸ’¨", name: "Speed Demon",   desc: "Reaction under 200 ms" },
-    { id: "memory", icon: "ðŸ§©", name: "Memory Master", desc: "Board cleared under 60 s" },
-    { id: "mind",   icon: "ðŸ”®", name: "Mind Reader",   desc: "Number guessed in 4 tries" },
-    { id: "daily",  icon: "âœ…", name: "Completionist", desc: "All three games in a day" },
-    { id: "secret", icon: "ðŸŽ‰", name: "Party Animal",  desc: "Found the secret" }
+    { id: "first",  icon: "🌱", name: "First Steps",   desc: "Opened the site" },
+    { id: "streak3",icon: "🔥", name: "On a Roll",     desc: "3-day streak" },
+    { id: "streak7",icon: "🚀", name: "Week Warrior",  desc: "7-day streak" },
+    { id: "night",  icon: "🌙", name: "Night Owl",     desc: "Visited before 5 AM" },
+    { id: "early",  icon: "🐦", name: "Early Bird",    desc: "Visited before 8 AM" },
+    { id: "speed",  icon: "💨", name: "Speed Demon",   desc: "Reaction under 200 ms" },
+    { id: "memory", icon: "🧩", name: "Memory Master", desc: "Board cleared under 60 s" },
+    { id: "mind",   icon: "🔮", name: "Mind Reader",   desc: "Number guessed in 4 tries" },
+    { id: "daily",  icon: "✅", name: "Completionist", desc: "All three games in a day" },
+    { id: "secret", icon: "🎉", name: "Party Animal",  desc: "Found the secret" }
   ];
 
   const FORTUNES = [
@@ -703,7 +703,7 @@
     "Someone is going to think of you today and smile. Possibly a cat.",
     "A bug you fix today saves you three hours next week.",
     "You will type something today that makes you laugh out loud.",
-    "Luck favors the prepared â€” and the one who reads the error message.",
+    "Luck favors the prepared — and the one who reads the error message.",
     "A short walk will solve at least one thing you're stuck on.",
     "Save your work. Yes, right now. Consider this your sign.",
     "The thing you keep postponing is smaller than it feels.",
@@ -871,7 +871,7 @@
     state.badges[id] = Date.now();
     save();
     renderBadges();
-    toast(`${badge.icon} Badge unlocked â€” ${badge.name}`);
+    toast(`${badge.icon} Badge unlocked — ${badge.name}`);
     burst(window.innerWidth / 2, window.innerHeight * 0.3, 34);
   }
 
@@ -884,7 +884,7 @@
       el.className = "badge" + (got ? " got" : "");
       el.title = b.desc;
       el.innerHTML =
-        `<span class="b-icon">${got ? b.icon : "ðŸ”’"}</span>` +
+        `<span class="b-icon">${got ? b.icon : "🔒"}</span>` +
         `<span class="b-name">${b.name}</span>` +
         `<span class="b-desc">${b.desc}</span>`;
       grid.appendChild(el);
@@ -923,7 +923,7 @@
 
     save();
 
-    if (!silent && streakGrew) toast(`ðŸ”¥ ${state.streak}-day streak â€” welcome back!`);
+    if (!silent && streakGrew) toast(`🔥 ${state.streak}-day streak — welcome back!`);
 
     if (state.streak >= 3) unlock("streak3");
     if (state.streak >= 7) unlock("streak7");
@@ -942,7 +942,7 @@
     const next = milestones.find((m) => m > state.streak);
     const note = $("streakNote");
     if (!next) {
-      note.innerHTML = "You've reached every milestone. Absolute legend. ðŸ†";
+      note.innerHTML = "You've reached every milestone. Absolute legend. 🏆";
     } else {
       const left = next - state.streak;
       note.innerHTML = left === 1
@@ -979,7 +979,7 @@
       li.innerHTML =
         `<span class="q-ico">${g.icon}</span>` +
         `<span>${g.label}</span>` +
-        `<span class="q-check">âœ“</span>`;
+        `<span class="q-check">✓</span>`;
       li.addEventListener("click", () => selectTab(g.id));
       li.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selectTab(g.id); }
@@ -1003,7 +1003,7 @@
     const count = state.quest.filter((id) => GAMES.some((g) => g.id === id)).length;
     if (count === GAMES.length) {
       unlock("daily");
-      toast("âœ… Daily goal complete. See you tomorrow!");
+      toast("✅ Daily goal complete. See you tomorrow!");
       celebrate();
     }
   }
@@ -1027,7 +1027,7 @@
   tabButtons.forEach((btn) => btn.addEventListener("click", () => selectTab(btn.dataset.tab)));
 
   /* ============================================================
-     Game 1 â€” Reaction
+     Game 1 — Reaction
      ============================================================ */
   const rx = { phase: "idle", timer: null, t0: 0, times: [] };
   const rxBox = $("rxBox");
@@ -1039,7 +1039,7 @@
   }
 
   function rxStart() {
-    rxSet("waiting", "Wait for greenâ€¦");
+    rxSet("waiting", "Wait for green…");
     const delay = 1200 + Math.random() * 2800;
     rx.timer = setTimeout(() => {
       rx.t0 = performance.now();
@@ -1068,7 +1068,7 @@
       }
       $("rxBest").textContent = Math.round(state.bestReaction) + " ms";
 
-      rxSet("done", `${Math.round(ms)} ms â€” click to go again.`);
+      rxSet("done", `${Math.round(ms)} ms — click to go again.`);
       markPlayed("reaction");
       if (ms < 200) unlock("speed");
       return;
@@ -1086,9 +1086,9 @@
   });
 
   /* ============================================================
-     Game 2 â€” Memory
+     Game 2 — Memory
      ============================================================ */
-  const SYMS = ["ðŸ•", "ðŸš€", "ðŸ™", "ðŸŽ§", "ðŸŒµ", "ðŸ©"];
+  const SYMS = ["🍕", "🚀", "🐙", "🎧", "🌵", "🍩"];
   let mem = null;
   const memGrid = $("memGrid");
 
@@ -1180,13 +1180,13 @@
 
     celebrate();
     if (secs < 60) unlock("memory");
-    if (record) toast(`ðŸ§  New memory record â€” ${secs}s!`);
+    if (record) toast(`🧠 New memory record — ${secs}s!`);
   }
 
   $("memReset").addEventListener("click", memNew);
 
   /* ============================================================
-     Game 3 â€” Number guessing
+     Game 3 — Number guessing
      ============================================================ */
   const MAX_TRIES = 7;
   let gnum = 0;
@@ -1240,14 +1240,14 @@
     if (gtries >= MAX_TRIES) {
       gdone = true;
       guessMsg.className = "msg bad";
-      guessMsg.textContent = `Out of tries â€” it was ${gnum}. Click "New number" to try again.`;
+      guessMsg.textContent = `Out of tries — it was ${gnum}. Click "New number" to try again.`;
       guessInput.disabled = true;
       return;
     }
 
     const left = MAX_TRIES - gtries;
     guessMsg.className = "msg";
-    guessMsg.textContent = `${value < gnum ? "Higher" : "Lower"} Â· ${left} ${left === 1 ? "try" : "tries"} left`;
+    guessMsg.textContent = `${value < gnum ? "Higher" : "Lower"} · ${left} ${left === 1 ? "try" : "tries"} left`;
     guessInput.value = "";
     guessInput.focus();
   });
@@ -1283,7 +1283,7 @@
       renderStats();
       renderQuest();
       renderFortune();
-      toast("ðŸŒ… A new day â€” streak updated.");
+      toast("🌅 A new day — streak updated.");
     }
   }
 
@@ -1356,7 +1356,7 @@
     scheduleMinute();
 
     if (state.streak > 1) {
-      setTimeout(() => toast(`ðŸ”¥ ${state.streak}-day streak â€” glad you're back.`), 500);
+      setTimeout(() => toast(`🔥 ${state.streak}-day streak — glad you're back.`), 500);
     }
   }
 
