@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome to my PC</title>
+<style>
+  :root {
+    --line: rgba(255, 255, 255, .11);
+    --txt: #e2e8f0;
+    --muted: #94a3b8;
+    --dim: #64748b;
+    --accent: #60a5fa;
+    --good: #34d399;
+    --bad: #f87171;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scrollbar-color: #334155 #0b1120; }
+
+  body {
+    min-height: 100vh;
+    background-color: #0b1120;
+    background-image:
+      radial-gradient(circle at 20% 8%, rgba(59, 130, 246, .22), transparent 42%),
+      radial-gradient(circle at 82% 88%, rgba(139, 92, 246, .2), transparent 42%),
+      radial-gradient(circle at 50% 50%, #16233d 0%, #0b1120 70%);
+    background-attachment: fixed;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: var(--txt);
+    padding: 30px 16px 56px;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* decorative drifting glows */
+  body::before,
+  body::after {
+    content: "";
+    position: fixed;
+    width: 44vmax;
+    height: 44vmax;
+    border-radius: 50%;
+    filter: blur(95px);
+    opacity: .3;
+    pointer-events: none;
+    z-index: 0;
+  }
+  body::before {
+    top: -20vmax; left: -16vmax; background: #2563eb;
+    animation: drift 24s ease-in-out infinite alternate;
+  }
+  body::after {
+    bottom: -22vmax; right: -18vmax; background: #7c3aed;
+    animation: drift 28s ease-in-out infinite alternate-reverse;
+  }
+  @keyframes drift {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to   { transform: translate3d(6vmax, 4vmax, 0) scale(1.12); }
+  }
+
+  #fx {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    width: min(680px, 100%);
+    margin: 0 auto;
+    display: grid;
+    gap: 16px;
+  }
+
+  .card {
+    background: rgba(255, 255, 255, .055);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, .35);
+    backdrop-filter: blur(10px);
+    animation: rise .55s cubic-bezier(.22, 1, .36, 1) both;
+  }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* ---------- hero ---------- */
+  .hero { text-align: center; padding: 34px 24px 30px; }
+  .greeting {
+    font-size: .7rem;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: #93c5fd;
+    margin-bottom: 12px;
+  }
+  h1 {
+    font-size: clamp(1.9rem, 6.5vw, 2.7rem);
+    line-height: 1.12;
+    letter-spacing: -.02em;
+    background: linear-gradient(180deg, #fff, #93c5fd);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .clock {
+    margin-top: 18px;
+    font-size: clamp(1.7rem, 6vw, 2.2rem);
+    font-weight: 300;
+    font-variant-numeric: tabular-nums;
+    color: #dbeafe;
+  }
+  .date { margin-top: 4px; font-size: .86rem; color: var(--muted); }
+
+  /* ---------- stats ---------- */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 20px 18px; }
+  .stat { text-align: center; }
+  .stat .num {
+    display: block;
+    font-size: 1.3rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: #f1f5f9;
+  }
+  .stat .lab {
+    display: block;
+    margin-top: 4px;
+    font-size: .62rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+  .streak-note {
+    grid-column: 1 / -1;
+    margin-top: 14px;
+    padding-top: 13px;
+    border-top: 1px dashed rgba(255, 255, 255, .1);
+    text-align: center;
+    font-size: .78rem;
+    color: var(--muted);
+  }
+  .streak-note b { color: #bfdbfe; font-weight: 600; }
+
+  /* ---------- daily ---------- */
+  .daily-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  h2 {
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .pill {
+    font-size: .7rem;
+    padding: 5px 11px;
+    border-radius: 999px;
+    background: rgba(96, 165, 250, .14);
+    border: 1px solid rgba(96, 165, 250, .35);
+    color: #bfdbfe;
+    font-variant-numeric: tabular-nums;
+    transition: .3s;
+  }
+  .pill.done {
+    background: rgba(52, 211, 153, .16);
+    border-color: rgba(52, 211, 153, .45);
+    color: #a7f3d0;
+  }
+  .fortune {
+    font-size: 1.02rem;
+    line-height: 1.65;
+    color: #cbd5e1;
+    font-style: italic;
+    border-left: 2px solid rgba(167, 139, 250, .55);
+    padding-left: 15px;
+  }
+  .quest { margin-top: 20px; padding-top: 16px; border-top: 1px dashed rgba(255, 255, 255, .1); }
+  .quest-label {
+    font-size: .62rem;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 10px;
+  }
+  .quest-list { list-style: none; display: grid; gap: 8px; }
+  .quest-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 13px;
+    border-radius: 11px;
+    background: rgba(255, 255, 255, .035);
+    border: 1px solid rgba(255, 255, 255, .07);
+    font-size: .9rem;
+    color: var(--muted);
+    cursor: pointer;
+    transition: .18s;
+  }
+  .quest-list li:hover { background: rgba(255, 255, 255, .07); color: var(--txt); transform: translateX(2px); }
+  .quest-list li.done {
+    color: #a7f3d0;
+    border-color: rgba(52, 211, 153, .3);
+    background: rgba(52, 211, 153, .09);
+  }
+  .q-ico { width: 1.3em; text-align: center; }
+  .q-check { margin-left: auto; font-size: .8rem; color: var(--good); opacity: 0; transition: .2s; }
+  .quest-list li.done .q-check { opacity: 1; }
+
+  /* ---------- games ---------- */
+  .tabs {
+    display: flex;
+    gap: 5px;
+    padding: 5px;
+    margin-bottom: 18px;
+    border-radius: 14px;
+    background: rgba(0, 0, 0, .3);
+    border: 1px solid var(--line);
+  }
+  .tab {
+    flex: 1;
+    padding: 10px 6px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--muted);
+    font: inherit;
+    font-size: .85rem;
+    cursor: pointer;
+    transition: .18s;
+    white-space: nowrap;
+  }
+  .tab:hover { color: var(--txt); }
+  .tab.active {
+    background: linear-gradient(160deg, rgba(96, 165, 250, .3), rgba(167, 139, 250, .22));
+    color: #fff;
+    box-shadow: 0 2px 14px rgba(96, 165, 250, .22);
+  }
+  .hidden { display: none !important; }
+  .hint { font-size: .85rem; color: var(--dim); margin-bottom: 14px; }
+
+  .reaction-box {
+    display: grid;
+    place-items: center;
+    min-height: 148px;
+    padding: 18px;
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    background: linear-gradient(160deg, #1e293b, #0f172a);
+    color: #cbd5e1;
+    font-size: 1.02rem;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: background .12s, color .12s, box-shadow .2s;
+  }
+  .reaction-box.waiting {
+    background: linear-gradient(160deg, #7f1d1d, #450a0a);
+    color: #fecaca;
+    border-color: rgba(248, 113, 113, .4);
+  }
+  .reaction-box.ready {
+    background: linear-gradient(160deg, #15803d, #052e16);
+    color: #dcfce7;
+    border-color: rgba(52, 211, 153, .6);
+    box-shadow: 0 0 0 4px rgba(52, 211, 153, .15);
+  }
+  .reaction-box.early {
+    background: linear-gradient(160deg, #b45309, #451a03);
+    color: #fde68a;
+    border-color: rgba(251, 191, 36, .4);
+  }
+  .reaction-box:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+  .mini {
+    min-width: 76px;
+    padding: 8px 10px;
+    border-radius: 11px;
+    text-align: center;
+    background: rgba(255, 255, 255, .04);
+    border: 1px solid rgba(255, 255, 255, .07);
+  }
+  .mini span { display: block; font-size: .92rem; color: var(--txt); font-variant-numeric: tabular-nums; }
+  .mini small {
+    display: block;
+    margin-top: 3px;
+    font-size: .58rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  .btn {
+    padding: 10px 18px;
+    border: 1px solid rgba(96, 165, 250, .35);
+    border-radius: 11px;
+    background: linear-gradient(160deg, rgba(96, 165, 250, .3), rgba(59, 130, 246, .18));
+    color: #e0f2fe;
+    font: inherit;
+    font-size: .85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .18s;
+  }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(59, 130, 246, .25); }
+  .btn:active { transform: translateY(0); }
+  .btn.ghost {
+    background: rgba(255, 255, 255, .04);
+    border-color: rgba(255, 255, 255, .13);
+    color: var(--muted);
+  }
+  .btn.ghost:hover { color: var(--txt); box-shadow: none; }
+
+  .mem-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    max-width: 340px;
+    margin: 0 auto;
+  }
+  .mem-card {
+    position: relative;
+    aspect-ratio: 1;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    perspective: 600px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mem-inner {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transition: transform .35s cubic-bezier(.3, .8, .4, 1);
+  }
+  .mem-card.flipped .mem-inner,
+  .mem-card.matched .mem-inner { transform: rotateY(180deg); }
+  .face {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    font-size: 1.5rem;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .front {
+    background: linear-gradient(160deg, #1e293b, #0f172a);
+    border: 1px solid rgba(255, 255, 255, .12);
+    color: #475569;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  .back {
+    background: linear-gradient(160deg, #334155, #1e293b);
+    border: 1px solid rgba(147, 197, 253, .3);
+    transform: rotateY(180deg);
+  }
+  .mem-card.matched .back {
+    background: linear-gradient(160deg, #065f46, #064e3b);
+    border-color: rgba(52, 211, 153, .5);
+    box-shadow: 0 0 16px rgba(52, 211, 153, .2);
+  }
+  .mem-card:not(.flipped):not(.matched):hover .front {
+    border-color: rgba(96, 165, 250, .45);
+    color: #93c5fd;
+  }
+
+  .guess-row { display: flex; gap: 8px; justify-content: center; }
+  .guess-row input {
+    width: 140px;
+    padding: 11px 14px;
+    border-radius: 11px;
+    border: 1px solid rgba(255, 255, 255, .14);
+    background: rgba(0, 0, 0, .32);
+    color: var(--txt);
+    font: inherit;
+    font-size: 1rem;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .guess-row input::-webkit-outer-spin-button,
+  .guess-row input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .guess-row input:focus {
+    outline: none;
+    border-color: rgba(96, 165, 250, .65);
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, .14);
+  }
+  .guess-row input:disabled { opacity: .45; }
+
+  .msg {
+    min-height: 1.5em;
+    margin-top: 14px;
+    text-align: center;
+    font-size: .9rem;
+    color: var(--muted);
+    transition: color .2s;
+  }
+  .msg.good { color: #6ee7b7; }
+  .msg.bad { color: #fca5a5; }
+
+  /* ---------- badges ---------- */
+  .badge-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(116px, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .badge {
+    display: grid;
+    gap: 2px;
+    place-items: center;
+    padding: 14px 8px;
+    border-radius: 13px;
+    text-align: center;
+    background: rgba(255, 255, 255, .03);
+    border: 1px solid rgba(255, 255, 255, .07);
+    opacity: .42;
+    filter: grayscale(1);
+    transition: .25s;
+  }
+  .badge.got {
+    opacity: 1;
+    filter: none;
+    background: linear-gradient(160deg, rgba(96, 165, 250, .15), rgba(167, 139, 250, .1));
+    border-color: rgba(147, 197, 253, .32);
+  }
+  .badge.got:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 0, 0, .3); }
+  .b-icon { font-size: 1.45rem; line-height: 1; }
+  .b-name { margin-top: 6px; font-size: .76rem; font-weight: 600; color: var(--txt); }
+  .b-desc { font-size: .64rem; line-height: 1.3; color: var(--dim); }
+
+  footer {
+    margin-top: 6px;
+    text-align: center;
+    font-size: .74rem;
+    line-height: 1.7;
+    color: #475569;
+  }
+
+  /* ---------- toasts ---------- */
+  #toasts {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: min(420px, 92vw);
+    z-index: 10000;
+    pointer-events: none;
+  }
+  .toast {
+    padding: 11px 18px;
+    border-radius: 12px;
+    background: rgba(15, 23, 42, .94);
+    border: 1px solid rgba(147, 197, 253, .32);
+    color: var(--txt);
+    font-size: .86rem;
+    text-align: center;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .5);
+    animation: toastIn .3s ease both;
+  }
+  .toast.out { animation: toastOut .35s ease both; }
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateY(12px) scale(.96); }
+    to   { opacity: 1; transform: none; }
+  }
+  @keyframes toastOut {
+    to { opacity: 0; transform: translateY(-8px) scale(.97); }
+  }
+
+  body.party { animation: hue 2.4s linear infinite; }
+  @keyframes hue { to { filter: hue-rotate(360deg); } }
+
+  @media (max-width: 560px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .card { padding: 20px; }
+  }
+  @media (max-width: 420px) {
+    .tab { font-size: .74rem; padding: 9px 2px; }
+    .mini { min-width: 68px; padding: 7px 8px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .001ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<main class="wrap">
+  <header class="card hero">
+    <p class="greeting" id="greeting">Welcome</p>
+    <h1 id="title">Welcome to my PC</h1>
+    <div class="clock" id="time">--:--</div>
+    <div class="date" id="date">&nbsp;</div>
+  </header>
+
+  <section class="card stats" aria-label="Your stats">
+    <div class="stat"><span class="num" id="streakNum">1</span><span class="lab">day streak</span></div>
+    <div class="stat"><span class="num" id="bestNum">1</span><span class="lab">best streak</span></div>
+    <div class="stat"><span class="num" id="daysNum">1</span><span class="lab">days visited</span></div>
+    <div class="stat"><span class="num" id="timeNum">0s</span><span class="lab">time here</span></div>
+    <p class="streak-note" id="streakNote"></p>
+  </section>
+
+  <section class="card">
+    <div class="daily-head">
+      <h2>Fortune of the day</h2>
+      <span class="pill" id="questPill">0 / 3</span>
+    </div>
+    <p class="fortune" id="fortune">&nbsp;</p>
+
+    <div class="quest">
+      <p class="quest-label">Daily goal â€” clear all three</p>
+      <ul class="quest-list" id="questList"></ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="tabs" role="tablist" aria-label="Mini games">
+      <button class="tab active" role="tab" aria-selected="true" data-tab="reaction">âš¡ Reaction</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="memory">ðŸ§  Memory</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="guess">ðŸŽ¯ Guess</button>
+    </div>
+
+    <div class="panel" id="panel-reaction" role="tabpanel">
+      <p class="hint">Click the box the instant it turns green.</p>
+      <div class="reaction-box" id="rxBox" role="button" tabindex="0">Click to start</div>
+      <div class="row">
+        <div class="mini"><span id="rxLast">â€”</span><small>last</small></div>
+        <div class="mini"><span id="rxAvg">â€”</span><small>avg of 5</small></div>
+        <div class="mini"><span id="rxBest">â€”</span><small>best</small></div>
+      </div>
+    </div>
+
+    <div class="panel hidden" id="panel-memory" role="tabpanel">
+      <p class="hint">Flip cards and find all six pairs.</p>
+      <div class="mem-grid" id="memGrid"></div>
+      <div class="row">
+        <div class="mini"><span id="memMoves">0</span><small>moves</small></div>
+        <div class="mini"><span id="memTime">0s</span><small>time</small></div>
+        <button class="btn ghost" id="memReset" type="button">Restart</button>
+      </div>
+      <p class="msg" id="memMsg"></p>
+    </div>
+
+    <div class="panel hidden" id="panel-guess" role="tabpanel">
+      <p class="hint">I'm thinking of a number from 1 to 100. You get 7 tries.</p>
+      <form class="guess-row" id="guessForm" autocomplete="off">
+        <input id="guessInput" type="number" min="1" max="100" inputmode="numeric" placeholder="Your guess" aria-label="Your guess">
+        <button class="btn" type="submit">Guess</button>
+      </form>
+      <p class="msg" id="guessMsg">Make your first guess.</p>
+      <div class="row">
+        <div class="mini"><span id="guessTries">0</span><small>tries</small></div>
+        <div class="mini"><span id="guessWins">0</span><small>wins</small></div>
+        <button class="btn ghost" id="guessReset" type="button">New number</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Badges</h2>
+    <div class="badge-grid" id="badgeGrid"></div>
+  </section>
+
+  <footer>
+    Everything is saved on this device Â· nothing leaves your browser.<br>
+    Miss a day and the streak starts over â€” see you tomorrow.
+  </footer>
+</main>
+
+<div id="toasts" aria-live="polite"></div>
+
+<script>
+(() => {
+  "use strict";
+
+  /* ============================================================
+     Storage (with in-memory fallback if localStorage is blocked)
+     ============================================================ */
+  const store = (() => {
+    let memory = {};
+    let ok = false;
+    try {
+      localStorage.setItem("__probe__", "1");
+      localStorage.removeItem("__probe__");
+      ok = true;
+    } catch (e) { ok = false; }
+    return {
+      get(k) {
+        try { return ok ? localStorage.getItem(k) : (memory[k] ?? null); }
+        catch (e) { return memory[k] ?? null; }
+      },
+      set(k, v) {
+        try { if (ok) localStorage.setItem(k, v); else memory[k] = v; }
+        catch (e) { memory[k] = v; }
+      }
+    };
+  })();
+
+  /* ============================================================
+     Helpers
+     ============================================================ */
+  const $ = (id) => document.getElementById(id);
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const pad = (n) => String(n).padStart(2, "0");
+  const dayKey = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+  function dayDiff(a, b) {
+    const [ay, am, ad] = a.split("-").map(Number);
+    const [by, bm, bd] = b.split("-").map(Number);
+    const A = new Date(ay, am - 1, ad);
+    const B = new Date(by, bm - 1, bd);
+    return Math.round((B - A) / 86400000);
+  }
+
+  function hash(str) {
+    let h = 2166136261;
+    for (let i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return h >>> 0;
+  }
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  const avg = (arr) => arr.reduce((s, n) => s + n, 0) / arr.length;
+
+  function formatSeconds(s) {
+    if (s < 60) return s + "s";
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    return h > 0 ? `${h}h ${m}m` : `${m}m`;
+  }
+
+  /* ============================================================
+     Game + badge definitions
+     ============================================================ */
+  const GAMES = [
+    { id: "reaction", icon: "âš¡", label: "Beat the reaction test" },
+    { id: "memory",   icon: "ðŸ§ ", label: "Clear the memory board" },
+    { id: "guess",    icon: "ðŸŽ¯", label: "Win at number guessing" }
+  ];
+
+  const BADGES = [
+    { id: "first",  icon: "ðŸŒ±", name: "First Steps",   desc: "Opened the site" },
+    { id: "streak3",icon: "ðŸ”¥", name: "On a Roll",     desc: "3-day streak" },
+    { id: "streak7",icon: "ðŸš€", name: "Week Warrior",  desc: "7-day streak" },
+    { id: "night",  icon: "ðŸŒ™", name: "Night Owl",     desc: "Visited before 5 AM" },
+    { id: "early",  icon: "ðŸ¦", name: "Early Bird",    desc: "Visited before 8 AM" },
+    { id: "speed",  icon: "ðŸ’¨", name: "Speed Demon",   desc: "Reaction under 200 ms" },
+    { id: "memory", icon: "ðŸ§©", name: "Memory Master", desc: "Board cleared under 60 s" },
+    { id: "mind",   icon: "ðŸ”®", name: "Mind Reader",   desc: "Number guessed in 4 tries" },
+    { id: "daily",  icon: "âœ…", name: "Completionist", desc: "All three games in a day" },
+    { id: "secret", icon: "ðŸŽ‰", name: "Party Animal",  desc: "Found the secret" }
+  ];
+
+  const FORTUNES = [
+    "The best time to start was yesterday. The second best is right now.",
+    "Small daily progress beats one heroic effort. Today counts.",
+    "Someone is going to think of you today and smile. Possibly a cat.",
+    "A bug you fix today saves you three hours next week.",
+    "You will type something today that makes you laugh out loud.",
+    "Luck favors the prepared â€” and the one who reads the error message.",
+    "A short walk will solve at least one thing you're stuck on.",
+    "Save your work. Yes, right now. Consider this your sign.",
+    "The thing you keep postponing is smaller than it feels.",
+    "You are allowed to close twelve tabs. Nothing bad will happen.",
+    "Today's best idea will arrive in the shower. Keep a towel handy.",
+    "Be kind to your future self: name your variables well.",
+    "Somewhere a rubber duck is waiting for your explanation.",
+    "You are closer to finished than you think. Keep going.",
+    "Curiosity is a superpower. Click the thing. Read the docs.",
+    "A perfect plan is worth less than a messy start.",
+    "Rest is part of the work, not a reward for it.",
+    "The best projects start with 'this is probably a bad idea'."
+  ];
+
+  /* ============================================================
+     State
+     ============================================================ */
+  const KEY = "welcome_pc_v1";
+  const defaults = {
+    firstVisit: null,
+    lastVisit: null,
+    streak: 0,
+    best: 0,
+    daysVisited: 0,
+    totalSeconds: 0,
+    badges: {},
+    questDate: null,
+    quest: [],
+    bestReaction: null,
+    bestMemory: null,
+    guessWins: 0
+  };
+
+  const state = (() => {
+    const raw = store.get(KEY);
+    const s = Object.assign({}, defaults);
+    if (raw) {
+      try { Object.assign(s, JSON.parse(raw)); } catch (e) { /* corrupt data, ignore */ }
+    }
+    if (!s.badges || typeof s.badges !== "object") s.badges = {};
+    if (!Array.isArray(s.quest)) s.quest = [];
+    return s;
+  })();
+
+  function save() {
+    store.set(KEY, JSON.stringify(state));
+  }
+
+  /* ============================================================
+     Toasts
+     ============================================================ */
+  function toast(text) {
+    const box = $("toasts");
+    const el = document.createElement("div");
+    el.className = "toast";
+    el.textContent = text;
+    box.appendChild(el);
+    setTimeout(() => {
+      el.classList.add("out");
+      setTimeout(() => el.remove(), 400);
+    }, 3200);
+  }
+
+  /* ============================================================
+     Confetti
+     ============================================================ */
+  const canvas = $("fx");
+  const ctx = canvas.getContext("2d");
+  const COLORS = ["#60a5fa", "#a78bfa", "#f472b6", "#fbbf24", "#34d399", "#f87171", "#e2e8f0"];
+  let particles = [];
+  let animating = false;
+
+  function sizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  sizeCanvas();
+  window.addEventListener("resize", sizeCanvas);
+
+  function makeParticle(x, y) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 1.5 + Math.random() * 7;
+    return {
+      x, y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 2,
+      w: 4 + Math.random() * 6,
+      h: 3 + Math.random() * 5,
+      rot: Math.random() * Math.PI,
+      vr: (Math.random() - 0.5) * 0.32,
+      color: COLORS[(Math.random() * COLORS.length) | 0],
+      life: 1
+    };
+  }
+
+  function burst(x, y, count = 55) {
+    if (reduced) return;
+    for (let i = 0; i < count; i++) particles.push(makeParticle(x, y));
+    startAnim();
+  }
+
+  function rain(count = 110) {
+    if (reduced) return;
+    for (let i = 0; i < count; i++) {
+      const p = makeParticle(Math.random() * canvas.width, -20 - Math.random() * canvas.height * 0.4);
+      p.vy = 2 + Math.random() * 4;
+      p.vx = (Math.random() - 0.5) * 2;
+      particles.push(p);
+    }
+    startAnim();
+  }
+
+  function celebrate() {
+    burst(canvas.width / 2, canvas.height * 0.32, 70);
+    rain(70);
+  }
+
+  function startAnim() {
+    if (!animating) {
+      animating = true;
+      requestAnimationFrame(step);
+    }
+  }
+
+  function step() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.vy += 0.16;
+      p.vx *= 0.99;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rot += p.vr;
+      p.life -= 0.006;
+
+      if (p.y > canvas.height + 50 || p.life <= 0) {
+        particles.splice(i, 1);
+        continue;
+      }
+
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.globalAlpha = Math.max(0, Math.min(1, p.life * 1.5));
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    }
+
+    if (particles.length) {
+      requestAnimationFrame(step);
+    } else {
+      animating = false;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+
+  /* ============================================================
+     Badges
+     ============================================================ */
+  function unlock(id) {
+    if (state.badges[id]) return;
+    const badge = BADGES.find((b) => b.id === id);
+    if (!badge) return;
+    state.badges[id] = Date.now();
+    save();
+    renderBadges();
+    toast(`${badge.icon} Badge unlocked â€” ${badge.name}`);
+    burst(window.innerWidth / 2, window.innerHeight * 0.3, 34);
+  }
+
+  function renderBadges() {
+    const grid = $("badgeGrid");
+    grid.innerHTML = "";
+    for (const b of BADGES) {
+      const got = !!state.badges[b.id];
+      const el = document.createElement("div");
+      el.className = "badge" + (got ? " got" : "");
+      el.title = b.desc;
+      el.innerHTML =
+        `<span class="b-icon">${got ? b.icon : "ðŸ”’"}</span>` +
+        `<span class="b-name">${b.name}</span>` +
+        `<span class="b-desc">${b.desc}</span>`;
+      grid.appendChild(el);
+    }
+  }
+
+  /* ============================================================
+     Visit + streak tracking
+     ============================================================ */
+  function registerVisit(silent) {
+    const today = dayKey();
+    const hour = new Date().getHours();
+    let streakGrew = false;
+
+    if (!state.firstVisit) state.firstVisit = today;
+
+    if (state.lastVisit !== today) {
+      if (!state.lastVisit) {
+        state.streak = 1;
+      } else {
+        const diff = dayDiff(state.lastVisit, today);
+        if (diff === 1) {
+          state.streak = Math.max(1, state.streak) + 1;
+          streakGrew = true;
+        } else if (diff > 1) {
+          state.streak = 1;
+        }
+      }
+      state.daysVisited += 1;
+      state.lastVisit = today;
+      state.best = Math.max(state.best, state.streak);
+    }
+
+    if (state.streak < 1) state.streak = 1;
+    if (state.best < state.streak) state.best = state.streak;
+
+    save();
+
+    if (!silent && streakGrew) toast(`ðŸ”¥ ${state.streak}-day streak â€” welcome back!`);
+
+    if (state.streak >= 3) unlock("streak3");
+    if (state.streak >= 7) unlock("streak7");
+    if (hour < 5) unlock("night");
+    else if (hour < 8) unlock("early");
+    unlock("first");
+  }
+
+  function renderStats() {
+    $("streakNum").textContent = state.streak;
+    $("bestNum").textContent = state.best;
+    $("daysNum").textContent = state.daysVisited;
+    $("timeNum").textContent = formatSeconds(state.totalSeconds);
+
+    const milestones = [3, 7, 14, 30, 60, 100, 365];
+    const next = milestones.find((m) => m > state.streak);
+    const note = $("streakNote");
+    if (!next) {
+      note.innerHTML = "You've reached every milestone. Absolute legend. ðŸ†";
+    } else {
+      const left = next - state.streak;
+      note.innerHTML = left === 1
+        ? `One more visit reaches a <b>${next}-day</b> streak.`
+        : `<b>${left} more days</b> to reach a ${next}-day streak.`;
+    }
+  }
+
+  /* ============================================================
+     Daily fortune + quest
+     ============================================================ */
+  function renderFortune() {
+    const pick = FORTUNES[hash(dayKey()) % FORTUNES.length];
+    $("fortune").textContent = pick;
+  }
+
+  function ensureQuest() {
+    const today = dayKey();
+    if (state.questDate !== today) {
+      state.questDate = today;
+      state.quest = [];
+      save();
+    }
+  }
+
+  function renderQuest() {
+    const list = $("questList");
+    list.innerHTML = "";
+    for (const g of GAMES) {
+      const done = state.quest.includes(g.id);
+      const li = document.createElement("li");
+      li.className = done ? "done" : "";
+      li.tabIndex = 0;
+      li.innerHTML =
+        `<span class="q-ico">${g.icon}</span>` +
+        `<span>${g.label}</span>` +
+        `<span class="q-check">âœ“</span>`;
+      li.addEventListener("click", () => selectTab(g.id));
+      li.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selectTab(g.id); }
+      });
+      list.appendChild(li);
+    }
+
+    const count = state.quest.filter((id) => GAMES.some((g) => g.id === id)).length;
+    const pill = $("questPill");
+    pill.textContent = `${count} / ${GAMES.length}`;
+    pill.classList.toggle("done", count === GAMES.length);
+  }
+
+  function markPlayed(gameId) {
+    ensureQuest();
+    if (state.quest.includes(gameId)) return;
+    state.quest.push(gameId);
+    save();
+    renderQuest();
+
+    const count = state.quest.filter((id) => GAMES.some((g) => g.id === id)).length;
+    if (count === GAMES.length) {
+      unlock("daily");
+      toast("âœ… Daily goal complete. See you tomorrow!");
+      celebrate();
+    }
+  }
+
+  /* ============================================================
+     Tabs
+     ============================================================ */
+  const tabButtons = Array.from(document.querySelectorAll(".tab"));
+
+  function selectTab(id) {
+    for (const btn of tabButtons) {
+      const on = btn.dataset.tab === id;
+      btn.classList.toggle("active", on);
+      btn.setAttribute("aria-selected", String(on));
+    }
+    document.querySelectorAll(".panel").forEach((p) => {
+      p.classList.toggle("hidden", p.id !== "panel-" + id);
+    });
+  }
+
+  tabButtons.forEach((btn) => btn.addEventListener("click", () => selectTab(btn.dataset.tab)));
+
+  /* ============================================================
+     Game 1 â€” Reaction
+     ============================================================ */
+  const rx = { phase: "idle", timer: null, t0: 0, times: [] };
+  const rxBox = $("rxBox");
+
+  function rxSet(phase, text) {
+    rx.phase = phase;
+    rxBox.className = "reaction-box" + (phase === "idle" || phase === "done" ? "" : " " + phase);
+    rxBox.textContent = text;
+  }
+
+  function rxStart() {
+    rxSet("waiting", "Wait for greenâ€¦");
+    const delay = 1200 + Math.random() * 2800;
+    rx.timer = setTimeout(() => {
+      rx.t0 = performance.now();
+      rxSet("ready", "GO!");
+    }, delay);
+  }
+
+  function rxClick() {
+    if (rx.phase === "waiting") {
+      clearTimeout(rx.timer);
+      rxSet("early", "Too soon! Click to retry.");
+      return;
+    }
+
+    if (rx.phase === "ready") {
+      const ms = performance.now() - rx.t0;
+      rx.times.push(ms);
+      if (rx.times.length > 5) rx.times.shift();
+
+      $("rxLast").textContent = Math.round(ms) + " ms";
+      $("rxAvg").textContent = Math.round(avg(rx.times)) + " ms";
+
+      if (state.bestReaction === null || ms < state.bestReaction) {
+        state.bestReaction = ms;
+        save();
+      }
+      $("rxBest").textContent = Math.round(state.bestReaction) + " ms";
+
+      rxSet("done", `${Math.round(ms)} ms â€” click to go again.`);
+      markPlayed("reaction");
+      if (ms < 200) unlock("speed");
+      return;
+    }
+
+    rxStart();
+  }
+
+  rxBox.addEventListener("click", rxClick);
+  rxBox.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      rxClick();
+    }
+  });
+
+  /* ============================================================
+     Game 2 â€” Memory
+     ============================================================ */
+  const SYMS = ["ðŸ•", "ðŸš€", "ðŸ™", "ðŸŽ§", "ðŸŒµ", "ðŸ©"];
+  let mem = null;
+  const memGrid = $("memGrid");
+
+  function memNew() {
+    if (mem && mem.timer) clearInterval(mem.timer);
+
+    const deck = shuffle(SYMS.concat(SYMS));
+    memGrid.innerHTML = "";
+    mem = { first: null, lock: false, moves: 0, matched: 0, started: 0, timer: null };
+
+    $("memMoves").textContent = "0";
+    $("memTime").textContent = "0s";
+    $("memMsg").textContent = "";
+    $("memMsg").className = "msg";
+
+    deck.forEach((sym) => {
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = "mem-card";
+      card.dataset.sym = sym;
+      card.setAttribute("aria-label", "Hidden card");
+      card.innerHTML =
+        `<span class="mem-inner">` +
+        `<span class="face front">?</span>` +
+        `<span class="face back">${sym}</span>` +
+        `</span>`;
+      card.addEventListener("click", () => memFlip(card));
+      memGrid.appendChild(card);
+    });
+  }
+
+  function memFlip(card) {
+    const game = mem;
+    if (!game || game.lock) return;
+    if (card.classList.contains("flipped") || card.classList.contains("matched")) return;
+
+    if (!game.started) {
+      game.started = Date.now();
+      game.timer = setInterval(() => {
+        $("memTime").textContent = Math.round((Date.now() - game.started) / 1000) + "s";
+      }, 250);
+    }
+
+    markPlayed("memory");
+    card.classList.add("flipped");
+
+    if (!game.first) {
+      game.first = card;
+      return;
+    }
+
+    const first = game.first;
+    game.moves += 1;
+    $("memMoves").textContent = game.moves;
+
+    if (first.dataset.sym === card.dataset.sym) {
+      first.classList.add("matched");
+      card.classList.add("matched");
+      game.first = null;
+      game.matched += 1;
+      if (game.matched === SYMS.length) memWin(game);
+      return;
+    }
+
+    game.lock = true;
+    setTimeout(() => {
+      if (mem !== game) return;
+      first.classList.remove("flipped");
+      card.classList.remove("flipped");
+      game.first = null;
+      game.lock = false;
+    }, 750);
+  }
+
+  function memWin(game) {
+    clearInterval(game.timer);
+    const secs = Math.max(1, Math.round((Date.now() - game.started) / 1000));
+    $("memTime").textContent = secs + "s";
+
+    const msg = $("memMsg");
+    msg.className = "msg good";
+    msg.textContent = `Cleared in ${game.moves} moves and ${secs}s. Nice.`;
+
+    const record = state.bestMemory === null || secs < state.bestMemory;
+    if (record) {
+      state.bestMemory = secs;
+      save();
+    }
+
+    celebrate();
+    if (secs < 60) unlock("memory");
+    if (record) toast(`ðŸ§  New memory record â€” ${secs}s!`);
+  }
+
+  $("memReset").addEventListener("click", memNew);
+
+  /* ============================================================
+     Game 3 â€” Number guessing
+     ============================================================ */
+  const MAX_TRIES = 7;
+  let gnum = 0;
+  let gtries = 0;
+  let gdone = false;
+
+  const guessInput = $("guessInput");
+  const guessMsg = $("guessMsg");
+
+  function guessNew() {
+    gnum = 1 + Math.floor(Math.random() * 100);
+    gtries = 0;
+    gdone = false;
+    $("guessTries").textContent = "0";
+    $("guessWins").textContent = state.guessWins;
+    guessMsg.className = "msg";
+    guessMsg.textContent = "Make your first guess.";
+    guessInput.disabled = false;
+    guessInput.value = "";
+    guessInput.focus();
+  }
+
+  $("guessForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (gdone) return;
+
+    const value = Number(guessInput.value);
+    if (!Number.isInteger(value) || value < 1 || value > 100) {
+      guessMsg.className = "msg bad";
+      guessMsg.textContent = "Enter a whole number from 1 to 100.";
+      return;
+    }
+
+    gtries += 1;
+    $("guessTries").textContent = gtries;
+    markPlayed("guess");
+
+    if (value === gnum) {
+      gdone = true;
+      guessMsg.className = "msg good";
+      guessMsg.textContent = `Yes! ${gnum} in ${gtries} ${gtries === 1 ? "try" : "tries"}. Click "New number" to play again.`;
+      state.guessWins += 1;
+      save();
+      $("guessWins").textContent = state.guessWins;
+      guessInput.disabled = true;
+      celebrate();
+      if (gtries <= 4) unlock("mind");
+      return;
+    }
+
+    if (gtries >= MAX_TRIES) {
+      gdone = true;
+      guessMsg.className = "msg bad";
+      guessMsg.textContent = `Out of tries â€” it was ${gnum}. Click "New number" to try again.`;
+      guessInput.disabled = true;
+      return;
+    }
+
+    const left = MAX_TRIES - gtries;
+    guessMsg.className = "msg";
+    guessMsg.textContent = `${value < gnum ? "Higher" : "Lower"} Â· ${left} ${left === 1 ? "try" : "tries"} left`;
+    guessInput.value = "";
+    guessInput.focus();
+  });
+
+  $("guessReset").addEventListener("click", guessNew);
+
+  /* ============================================================
+     Clock, greeting, day rollover
+     ============================================================ */
+  const timeFmt = new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit", hour12: false });
+  const dateFmt = new Intl.DateTimeFormat(undefined, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+
+  let currentDay = dayKey();
+
+  function greetingFor(hour) {
+    if (hour < 5) return "Still up?";
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    if (hour < 22) return "Good evening";
+    return "Good night";
+  }
+
+  function tick() {
+    const now = new Date();
+    $("time").textContent = timeFmt.format(now);
+    $("date").textContent = dateFmt.format(now);
+    $("greeting").textContent = greetingFor(now.getHours());
+
+    if (dayKey(now) !== currentDay) {
+      currentDay = dayKey(now);
+      registerVisit(true);
+      ensureQuest();
+      renderStats();
+      renderQuest();
+      renderFortune();
+      toast("ðŸŒ… A new day â€” streak updated.");
+    }
+  }
+
+  function scheduleMinute() {
+    const now = new Date();
+    const wait = 60000 - (now.getSeconds() * 1000 + now.getMilliseconds());
+    setTimeout(() => {
+      tick();
+      scheduleMinute();
+    }, wait + 50);
+  }
+
+  /* ============================================================
+     Time tracking
+     ============================================================ */
+  let unsaved = 0;
+
+  setInterval(() => {
+    if (document.visibilityState === "visible") {
+      state.totalSeconds += 1;
+      renderStats();
+      unsaved += 1;
+      if (unsaved >= 10) {
+        unsaved = 0;
+        save();
+      }
+    }
+  }, 1000);
+
+  document.addEventListener("visibilitychange", save);
+  window.addEventListener("pagehide", save);
+
+  /* ============================================================
+     Secret
+     ============================================================ */
+  let typedBuffer = "";
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
+    typedBuffer = (typedBuffer + e.key.toLowerCase()).slice(-10);
+    if (typedBuffer.includes("party")) {
+      typedBuffer = "";
+      unlock("secret");
+      celebrate();
+      document.body.classList.add("party");
+      setTimeout(() => document.body.classList.remove("party"), 3000);
+    }
+  });
+
+  /* ============================================================
+     Boot
+     ============================================================ */
+  function boot() {
+    registerVisit(true);
+    ensureQuest();
+
+    renderStats();
+    renderFortune();
+    renderQuest();
+    renderBadges();
+
+    $("guessWins").textContent = state.guessWins;
+    if (state.bestReaction !== null) $("rxBest").textContent = Math.round(state.bestReaction) + " ms";
+
+    memNew();
+    guessNew();
+    selectTab("reaction");
+
+    tick();
+    scheduleMinute();
+
+    if (state.streak > 1) {
+      setTimeout(() => toast(`ðŸ”¥ ${state.streak}-day streak â€” glad you're back.`), 500);
+    }
+  }
+
+  boot();
+})();
+</script>
+</body>
+</html>
